@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# lessons learned:
+#  - sort sorts a file per line, -n names it numeric sort instead of ascii
+#  - mapfile maps input from stdin to an array (one line per element)
+#  - < <(...)  is similar tot piping   |  but leaves result available in parent process
+
 echo "- - - START - - -"
 echo `date "+%Y-%m-%d %H:%M:%S"`
 echo "- - -"
