@@ -1,4 +1,4 @@
-# Hello World Program in Bash Shell
+#!/bin/bash
 
 echo "- - - START - - -"
 echo `date "+%Y-%m-%d %H:%M:%S"`
