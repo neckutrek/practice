@@ -3,6 +3,8 @@
 # lessons learned:
 #  - size of array: ${#array[@]}
 #  - print from within function: printf "%s\n" $msg >&2
+#  - expanding an array only gives the first argument, use "${array[@]}" instead
+
 
 echo "- - - START - - -"
 echo `date "+%Y-%m-%d %H:%M:%S"`
@@ -26,17 +28,58 @@ function count_chars {
   done
 }
 
-declare -A CHARS
-count_chars CHARS "abbcccdddd"
-declare -p CHARS
+function get_checksum {
+  local arr=("$@")
 
-echo "${CHARS[@]}"
+  local twos=0
+  local threes=0
+  for str in "${arr[@]}"; do
+    
+    local -A n_chars
+    for (( i=0; i<"${#str}"; i++)); do
+      char="${str:$i:1}"
+      ((n_chars[$char]++))
+    done
 
-#declare -a STRINGS
-#while read; do
-#  STRINGS+=($REPLY)
-#done < <(echo $(<./input.txt))
+    for i in "${!n_chars[@]}"; do
+      if [ "${n_chars[i]}" == 2 ]; then
+        ((twos++))
+        break
+      fi
+    done
 
+    for i in "${!n_chars[@]}"; do
+      if [ "${n_chars[i]}" == 3 ]; then
+        ((threes++))
+        break
+      fi
+    done
+
+    echo "$str" >&2
+    echo "${!n_chars[@]}" >&2
+    echo "${n_chars[@]}" >&2
+    echo "" >&2
+
+    unset n_chars
+
+  done
+
+  echo "$twos" >&2
+  echo "$threes" >&2
+
+  echo "$((twos*threes))"
+}
+
+#declare -A CHARS
+#count_chars CHARS "abbcccdddd"
+#declare -p CHARS
+
+declare -a strings
+while read; do
+  strings+=($REPLY)
+done < <(echo $(<./input.txt))
+
+echo $(get_checksum "${strings[@]}")
 
 
 #n_twos=0
