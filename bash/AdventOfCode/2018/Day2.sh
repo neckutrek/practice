@@ -5,7 +5,6 @@
 #  - print from within function: printf "%s\n" $msg >&2
 #  - expanding an array only gives the first argument, use "${array[@]}" instead
 
-
 echo "- - - START - - -"
 echo `date "+%Y-%m-%d %H:%M:%S"`
 echo
@@ -42,30 +41,21 @@ function get_checksum {
     done
 
     for i in "${!n_chars[@]}"; do
-      if [ "${n_chars[i]}" == 2 ]; then
+      if [ "${n_chars[$i]}" == 2 ]; then
         ((twos++))
         break
       fi
     done
 
-    for i in "${!n_chars[@]}"; do
-      if [ "${n_chars[i]}" == 3 ]; then
+    for j in "${!n_chars[@]}"; do
+      if [ "${n_chars[$j]}" == 3 ]; then
         ((threes++))
         break
       fi
     done
 
-    echo "$str" >&2
-    echo "${!n_chars[@]}" >&2
-    echo "${n_chars[@]}" >&2
-    echo "" >&2
-
     unset n_chars
-
   done
-
-  echo "$twos" >&2
-  echo "$threes" >&2
 
   echo "$((twos*threes))"
 }
