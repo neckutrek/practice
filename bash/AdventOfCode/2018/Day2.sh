@@ -38,6 +38,29 @@ function get_checksum {
   echo "$((twos*threes))"
 }
 
+function get_common_strings {
+  local arr=("$@")
+
+  local ndiff=0
+  for (( i=0; i<${#arr[@]}-1; i++)); do
+    for (( j=i+1; j<${#arr[@]}; j++)); do
+      for (( k=0; k<${#arr[i]}; k++)); do
+        if [ "${arr[$i]:$k:1}" != "${arr[$j]:$k:1}" ]; then
+          ((ndiff++))
+          if [ $ndiff > 1 ]; then break; fi
+        fi
+      done
+      if [ $ndiff == 1 ]; then break 2; fi
+      unset ndiff
+    done
+  done
+  
+  if [ $ndiff == 1 ]; 
+  then echo "${arr[$i]} ${arr[$j]}";
+  else echo "";
+  fi
+}
+
 function main {
   echo "- - - START - - -"
   echo `date "+%Y-%m-%d %H:%M:%S"`
@@ -46,9 +69,11 @@ function main {
   declare -a strings
   while read; do
     strings+=($REPLY)
-  done < <(echo $(<./input.txt))
+  done < <(echo $(<./input2.txt))
 
-  echo $(get_checksum "${strings[@]}")
+  #echo $(get_checksum "${strings[@]}")
+
+  echo $(get_common_strings "${strings[@]}")
 
   echo
   echo "- - - FINAL - - -"
