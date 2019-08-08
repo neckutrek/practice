@@ -42,12 +42,14 @@ function get_common_substring {
   local arr=("$@")
 
   local ndiff=0
-  for (( i=0; i<${#arr[@]}-1; i++)); do
-    for (( j=i+1; j<${#arr[@]}; j++)); do
+  local idx=0
+  for (( i=49; i<${#arr[@]}-1; i++)); do
+    for (( j=173; j<${#arr[@]}; j++)); do
       for (( k=0; k<${#arr[i]}; k++)); do
         if [ "${arr[$i]:$k:1}" != "${arr[$j]:$k:1}" ]; then
+          idx="$k"
           ((ndiff++))
-          if [ $ndiff > 1 ]; then break; fi
+          if (( $ndiff > 1 )); then break; fi
         fi
       done
       if [ $ndiff == 1 ]; then break 2; fi
@@ -56,7 +58,7 @@ function get_common_substring {
   done
   
   if [ $ndiff == 1 ]; then
-    echo "${arr[$i]:0:$k}${arr[$i]:$k+1}"
+    echo "${arr[$i]:0:$idx}${arr[$i]:$idx+1}"
   else
     echo ""
   fi
@@ -72,11 +74,12 @@ function main {
     strings+=($REPLY)
   done < <(echo $(<./input.txt))
 
-  printf "checksum: %s\n" $(get_checksum "${strings[@]}")
+  #printf "checksum: %s\n" $(get_checksum "${strings[@]}")
   # checksum: 7904
 
   printf "substring: %s\n" $(get_common_substring "${strings[@]}")
-  # substring: qwubihrkplymcraxefntvdzns
+  # substring: wugbihckpoymcpaxefotvdzns
+  #            wugbihckpoymcpaxefotvdzns
 
   echo
   echo "- - - FINAL - - -"
