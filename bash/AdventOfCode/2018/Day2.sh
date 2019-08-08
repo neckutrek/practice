@@ -38,7 +38,7 @@ function get_checksum {
   echo "$((twos*threes))"
 }
 
-function get_common_strings {
+function get_common_substring {
   local arr=("$@")
 
   local ndiff=0
@@ -55,9 +55,10 @@ function get_common_strings {
     done
   done
   
-  if [ $ndiff == 1 ]; 
-  then echo "${arr[$i]} ${arr[$j]}";
-  else echo "";
+  if [ $ndiff == 1 ]; then
+    echo "${arr[$i]:0:$k}${arr[$i]:$k+1}"
+  else
+    echo ""
   fi
 }
 
@@ -69,11 +70,13 @@ function main {
   declare -a strings
   while read; do
     strings+=($REPLY)
-  done < <(echo $(<./input2.txt))
+  done < <(echo $(<./input.txt))
 
-  #echo $(get_checksum "${strings[@]}")
+  printf "checksum: %s\n" $(get_checksum "${strings[@]}")
+  # checksum: 7904
 
-  echo $(get_common_strings "${strings[@]}")
+  printf "substring: %s\n" $(get_common_substring "${strings[@]}")
+  # substring: qwubihrkplymcraxefntvdzns
 
   echo
   echo "- - - FINAL - - -"
