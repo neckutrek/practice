@@ -3,16 +3,13 @@
 # lessons learned:
 #  - 
 
+# left top width height
 function extract_square_info {
-  set -x
-  #local left=$(echo "$1" | sed "s/([0-9][0-9]*)\,//p")
-  #local str='#1 @ 1,3: 4x4'
-  #sed "s/([0-9][0-9]*)\,/hello/p" <<< $str >&2
-  #local str2='hello 12 @ 34,56,78,90 x'
-  sed -r 's/.*([0-9][0-9]*).*/hej/g' <<< $str >&2
-  #echo 'abcabcabc' | sed 's/\(ab\)c/\1/g'
-  #echo "left = $str" >&2
-  set +x
+  printf "%s %s %s %s" \
+    $(sed -r 's/.* ([0-9]+),.*/\1/g' <<< $1) \
+    $(sed -r 's/.*,([0-9]+):.*/\1/g' <<< $1) \
+    $(sed -r 's/.* ([0-9]+)x.*/\1/g' <<< $1) \
+    $(sed -r 's/.*x([0-9]+)$/\1/g' <<< $1)
 }
 
 function main {
@@ -34,3 +31,4 @@ function main {
 }
 
 [[ $_ != $0 ]] && main "$@"
+
