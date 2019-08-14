@@ -50,7 +50,9 @@ function total_overlap_fabric {
 
   local i j
   for (( i=0; i<"${#args[@]}"-1; i++ )); do
+    printf "$i " >&2
     for (( j=i+1; j<"${#args[@]}"; j++ )); do
+      
       claim_fabric "${args[$i]}" "${args[$j]}"
     done
   done
@@ -75,17 +77,18 @@ function extract_claim {
 function main {
   echo "- - - START - - -"
   echo `date "+%Y-%m-%d %H:%M:%S"`
+  echo 
 
+  echo "Preprocessing data..."
   declare -a claims
   IFS="\n"
   while read; do
     claims+=($(extract_claim $REPLY))
-  done < <(echo $(<./input2.txt))
+  done < <(echo $(<./input.txt))
   unset IFS
   echo
+  echo "Preprocessing done!"
 
-  #total_overlap_fabric claims[@]
-  
   printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric claims[@])
 
   echo
