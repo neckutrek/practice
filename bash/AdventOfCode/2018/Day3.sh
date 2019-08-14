@@ -4,7 +4,7 @@
 #  - return multiple values from function: printf "(%s %s ...)" val1 val2 ... ; (array initialization)
 #  - receive string with spaces in it inside function: local -a arg=("${!1}")
 
-declare -a FABRIC
+declare -a "FABRIC"
 
 function xy2idx { 
   echo $(( $1 + $2 * 1000 )) 
@@ -31,11 +31,13 @@ function extract_square_info {
 # input:  2 claims as strings
 # output: 
 # modifies: array FABRIC
-
 function claim_fabric {
-  echo "d: ${FABRIC[@]}" >&2
   local -a arg1=("${!1}")
   local -a arg2=("${!2}")
+
+  #echo "$arg1" >&2
+  #echo "$arg2" >&2
+  #echo "FABRIC: ${FABRIC[@]}" >&2
 
   local -a claim1=$(extract_square_info arg1)
   local -a claim2=$(extract_square_info arg2)
@@ -69,57 +71,57 @@ function claim_fabric {
     else h2=$ay2; fi
   fi
 
-  #set -x
   if [[ "$w1" != 0 && "$w2" != 0 && \
         "$h1" != 0 && "$h2" != 0 ]]; then
+    local i j
     for (( i=w1; i<w2; i++ )); do
       for (( j=h1; j<h2; j++ )); do
         local idx=$(xy2idx $i $j)
-        set -x
         if [[ ! "${FABRIC[@]}" =~ "${idx}" ]]; then
           FABRIC+=("$idx")
-        else
-          echo "not: ${FABRIC[@]}" >&2
-          echo "$i $j $idx" >&2
+        #else
+          #echo "not $i $j $idx" >&2
         fi
-        set +x
       done
     done
   fi
-  #set +x
+  
+  #echo "FABRIC: ${FABRIC[@]}" >&2
 
-  echo "a: ${FABRIC[@]}" >&2
+  #echo "=====" >&2
 }
 
 # input:  set of all claims as array of strings
 # output: square inches of overlapping fabric
 function total_overlap_fabric {
   local -a args=("${!1}")
-  local sqi=0
-  
+
+  local i j
   for (( i=0; i<"${#args[@]}"-1; i++ )); do
+    
     for (( j=i+1; j<"${#args[@]}"; j++ )); do
-      echo "claim: $i $j" >&2
-      echo "b: ${FABRIC[@]}" >&2
-      $(claim_fabric args["$i"] args["$j"])
-      echo "c: ${FABRIC[@]}" >&2
+      echo "$i $j " >&2
+      claim_fabric args["$i"] args["$j"]
     done
   done
+
+  echo "${#FABRIC[@]}"
 }
 
 function main {
   echo "- - - START - - -"
   echo `date "+%Y-%m-%d %H:%M:%S"`
-  echo
 
   declare -a strings
   IFS="\n"
   while read; do
     strings+=($REPLY)
-  done < <(echo $(<./input2.txt))
+  done < <(echo $(<./input.txt))
   unset IFS
+  echo "Loaded ${#strings[@]} strings."
+  echo 
 
-  printf "Total overlapping fabric: %s square inches\n" $( total_overlap_fabric strings[@] )
+  printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric strings[@])
 
   echo
   echo "- - - FINAL - - -"
