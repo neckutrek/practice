@@ -15,43 +15,32 @@ function claim_fabric {
   local -a c1=$1
   local -a c2=$2
 
-  echo "c1: ${#c1[@]}   ${c1[@]}" >&2
-  echo "c2: ${#c2[@]}   ${c2[@]}" >&2
-  echo "FABRIC: ${FABRIC[@]}" >&2
+  #echo "c1: ${#c1[@]}   ${c1[@]}" >&2
+  #echo "c2: ${#c2[@]}   ${c2[@]}" >&2
+  #echo "FABRIC: ${FABRIC[@]}" >&2
 
-  local w1=0
-  local w2=0
-  local h1=0
-  local h2=0
-
-  if [[ "${c2[0]}" < "${c1[2]}" && "${c2[2]}" > "${c1[0]}" ]]; then
-    if [[ "${c2[0]}" > "${c1[0]}" ]]; then w1="${c2[0]}"
-    else w1="${c1[0]}"; fi
-    if [[ "${c2[2]}" < "${c1[2]}" ]]; then w2="${c2[2]}"
-    else w2="${c1[2]}"; fi
-  fi
-
-  if [[ "${c2[1]}" < "${c1[3]}" && "${c2[3]}" > "${c1[1]}" ]]; then
-    if [[ "$by1" > "${c1[1]}" ]]; then h1="${c2[1]}"
-    else h1="${c1[1]}"; fi
-    if [[ "${c2[3]}" < "${c1[3]}" ]]; then h2="${c2[3]}"
-    else h2="${c1[3]}"; fi
-  fi
-
-  if [[ "$w1" != 0 && "$w2" != 0 && \
-        "$h1" != 0 && "$h2" != 0 ]]; then
+  local w1=$(( "${c1[0]}" > "${c2[0]}" ? "${c1[0]}" : "${c2[0]}" ))
+  local w2=$(( "${c1[2]}" < "${c2[2]}" ? "${c1[2]}" : "${c2[2]}" ))
+  local h1=$(( "${c1[1]}" > "${c2[1]}" ? "${c1[1]}" : "${c2[1]}" ))
+  local h2=$(( "${c1[3]}" < "${c2[3]}" ? "${c1[3]}" : "${c2[3]}" ))
+  
+  if [[ "$w1" < "$w2" && "$h1" < "$h2" ]]; then
     local i j
+    #echo "$w1 $h1 $w2 $h2" >&2
     for (( i=w1; i<w2; i++ )); do
       for (( j=h1; j<h2; j++ )); do
         local idx="x${i}x${j}"
-        [[ -v FABRIC["$idx"] ]] || FABRIC["$idx"]+="x"
+        [[ -v FABRIC["$idx"] ]] || {
+          FABRIC["$idx"]+="x"
+          #echo "$idx" >&2
+        }
       done
     done 
   fi
   
-  echo "FABRIC: ${FABRIC[@]}" >&2
+  #echo "FABRIC: ${FABRIC[@]}" >&2
 
-  echo "=====" >&2
+  #echo "=====" >&2
 }
 
 # input:  set of all claims as array of strings
@@ -95,9 +84,9 @@ function main {
   unset IFS
   echo
 
-  total_overlap_fabric claims[@]
+  #total_overlap_fabric claims[@]
   
-  #printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric strings[@])
+  printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric claims[@])
 
   echo
   echo "- - - FINAL - - -"
