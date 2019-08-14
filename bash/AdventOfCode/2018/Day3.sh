@@ -47,12 +47,14 @@ function claim_fabric {
 # output: square inches of overlapping fabric
 function total_overlap_fabric {
   local -a args=("${!1}")
+  local percent=$(( "${#args[@]}" / 100 ))
 
   local i j
   for (( i=0; i<"${#args[@]}"-1; i++ )); do
-    printf "$i " >&2
+    if (( $i != 0 && $i % $percent == 0 )); then
+      printf "%s%%\n" $(( (i*100) / "${#args[@]}" )) >&2
+    fi
     for (( j=i+1; j<"${#args[@]}"; j++ )); do
-      
       claim_fabric "${args[$i]}" "${args[$j]}"
     done
   done
@@ -79,7 +81,7 @@ function main {
   echo `date "+%Y-%m-%d %H:%M:%S"`
   echo 
 
-  echo "Preprocessing data..."
+  printf "Preprocessing data..."
   declare -a claims
   IFS="\n"
   while read; do
@@ -87,7 +89,7 @@ function main {
   done < <(echo $(<./input.txt))
   unset IFS
   echo
-  echo "Preprocessing done!"
+  printf "Preprocessing done!\n"
 
   printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric claims[@])
 
