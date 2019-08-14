@@ -11,6 +11,7 @@ declare -A "FABRIC" # associative array is faster in Bash than indexed array (wh
 # input:  2 claims as strings
 # output: 
 # modifies: array FABRIC
+declare -i counter=0
 function claim_fabric {
   local -a c1=$1
   local -a c2=$2
@@ -30,10 +31,7 @@ function claim_fabric {
     for (( i=w1; i<w2; i++ )); do
       for (( j=h1; j<h2; j++ )); do
         local idx="x${i}x${j}"
-        [[ -v FABRIC["$idx"] ]] || {
-          FABRIC["$idx"]+="x"
-          #echo "$idx" >&2
-        }
+        [[ -v FABRIC["${idx}"] ]] || FABRIC[$idx]="x"
       done
     done 
   fi
@@ -51,7 +49,8 @@ function total_overlap_fabric {
 
   local i j
   for (( i=0; i<"${#args[@]}"-1; i++ )); do
-    if (( $i != 0 && $i % $percent == 0 )); then
+    if (( $i != 0 && $percent != 0 && \
+          $i % $percent == 0 )); then
       printf "%s%%\n" $(( (i*100) / "${#args[@]}" )) >&2
     fi
     for (( j=i+1; j<"${#args[@]}"; j++ )); do
@@ -76,20 +75,22 @@ function extract_claim {
     $((data[0]+data[2])) $((data[1]+data[3]))
 }
 
+# guess #1: 106xxx (don't remember)
+# guess #2: 106981 (too low)
 function main {
   echo "- - - START - - -"
   echo `date "+%Y-%m-%d %H:%M:%S"`
   echo 
 
-  printf "Preprocessing data..."
+  printf "Preprocessing data...\n"
   declare -a claims
   IFS="\n"
   while read; do
-    claims+=($(extract_claim $REPLY))
-  done < <(echo $(<./input.txt))
+    #claims+=($(extract_claim $REPLY))
+    claims+=($REPLY)
+  done < <(echo $(<./procinput.txt))
   unset IFS
-  echo
-  printf "Preprocessing done!\n"
+  printf "Preprocessing done!\n\n"
 
   printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric claims[@])
 
