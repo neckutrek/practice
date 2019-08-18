@@ -48,16 +48,16 @@ function main {
   echo `date "+%Y-%m-%d %H:%M:%S"`
   echo 
 
-  printf "Preprocessing data...\n"
+  printf "Total overlapping fabric: "
+
   declare -a claims
   IFS="\n"
   while read; do
     claims+=($(extract_claim $REPLY))
   done < <(echo $(<./input.txt))
   unset IFS
-  printf "Preprocessing done!\n\n"
 
-  printf "Total overlapping fabric: %s square inches\n" $(solve claims[@])
+  printf "%s square inches\n" $(solve claims[@])
 
   echo
   echo "- - - FINAL - - -"
