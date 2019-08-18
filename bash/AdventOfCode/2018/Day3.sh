@@ -6,59 +6,27 @@
 
 export LC_ALL=C # disables unicode support, to improve performance
 
-declare -A "FABRIC" # associative array is faster in Bash than indexed array (when overwriting)
-
-# input:  2 claims as strings
-# output: 
-# modifies: array FABRIC
-declare -i counter=0
-function claim_fabric {
-  local -a c1=$1
-  local -a c2=$2
-
-  #echo "c1: ${#c1[@]}   ${c1[@]}" >&2
-  #echo "c2: ${#c2[@]}   ${c2[@]}" >&2
-  #echo "FABRIC: ${FABRIC[@]}" >&2
-
-  local w1=$(( "${c1[0]}" > "${c2[0]}" ? "${c1[0]}" : "${c2[0]}" ))
-  local w2=$(( "${c1[2]}" < "${c2[2]}" ? "${c1[2]}" : "${c2[2]}" ))
-  local h1=$(( "${c1[1]}" > "${c2[1]}" ? "${c1[1]}" : "${c2[1]}" ))
-  local h2=$(( "${c1[3]}" < "${c2[3]}" ? "${c1[3]}" : "${c2[3]}" ))
-  
-  if [[ "$w1" < "$w2" && "$h1" < "$h2" ]]; then
-    local i j
-    #echo "$w1 $h1 $w2 $h2" >&2
-    for (( i=w1; i<w2; i++ )); do
-      for (( j=h1; j<h2; j++ )); do
-        local idx="x${i}x${j}"
-        [[ -v FABRIC["${idx}"] ]] || FABRIC[$idx]="x"
-      done
-    done 
-  fi
-  
-  #echo "FABRIC: ${FABRIC[@]}" >&2
-
-  #echo "=====" >&2
-}
-
-# input:  set of all claims as array of strings
-# output: square inches of overlapping fabric
-function total_overlap_fabric {
+function solve {
   local -a args=("${!1}")
-  local percent=$(( "${#args[@]}" / 100 ))
+  local -A m
 
-  local i j
-  for (( i=0; i<"${#args[@]}"-1; i++ )); do
-    if (( $i != 0 && $percent != 0 && \
-          $i % $percent == 0 )); then
-      printf "%s%%\n" $(( (i*100) / "${#args[@]}" )) >&2
-    fi
-    for (( j=i+1; j<"${#args[@]}"; j++ )); do
-      claim_fabric "${args[$i]}" "${args[$j]}"
+  for (( i=0; i<"${#args[@]}"; i++ )); do
+    local -a c="${args[$i]}"
+    for (( x="${c[0]}"; x<"${c[2]}"; x++ )); do
+      for (( y="${c[1]}"; y<"${c[3]}"; y++ )); do
+        (( m["x${x}y${y}"]++ ))
+      done
     done
   done
 
-  echo "${#FABRIC[@]}"
+  local -i sum=0
+  for k in "${!m[@]}"; do
+    if [[ "${m[$k]}" -ge 2 ]]; then
+      (( sum += 1 ))
+    fi
+  done
+
+  printf "%s" $sum
 }
 
 # input:  "#<id> @ <left>,<top>: <width>x<height>"
@@ -75,8 +43,6 @@ function extract_claim {
     $((data[0]+data[2])) $((data[1]+data[3]))
 }
 
-# guess #1: 106xxx (don't remember)
-# guess #2: 106981 (too low)
 function main {
   echo "- - - START - - -"
   echo `date "+%Y-%m-%d %H:%M:%S"`
@@ -86,13 +52,12 @@ function main {
   declare -a claims
   IFS="\n"
   while read; do
-    #claims+=($(extract_claim $REPLY))
-    claims+=($REPLY)
-  done < <(echo $(<./procinput.txt))
+    claims+=($(extract_claim $REPLY))
+  done < <(echo $(<./input.txt))
   unset IFS
   printf "Preprocessing done!\n\n"
 
-  printf "Total overlapping fabric: %s square inches\n" $(total_overlap_fabric claims[@])
+  printf "Total overlapping fabric: %s square inches\n" $(solve claims[@])
 
   echo
   echo "- - - FINAL - - -"
