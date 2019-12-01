@@ -15,8 +15,12 @@ forward =
       a universal reference will bind to anything, it will accept anything and preserve its constness
     void f(auto&& a); // 
 
-    std::move()
+  > **std::move()**
+    It passes its argument right through by reference, doing nothing with it at all, and its result type is rvalue reference.
+    std::move "turns its argument into an rvalue even if it isn't," and it achieves that by "hiding the name."
+    
     std::forward<T>()
+  
 
 
 - **Unified initialization**
