@@ -7,6 +7,8 @@
 forward = 
 
   > Rvalue references allow a function to branch at compile time (via overload resolution) on the condition "Am I being called on an lvalue or an rvalue?"
+  
+  > Things that are declared as rvalue reference can be lvalues or rvalues. The distinguishing criterion is: if it has a name, then it is an lvalue. Otherwise, it is an rvalue.
 
     void f(int&& a); // rvalue reference
     template<typename T> void f(T&& a); // forwarding/universal reference
