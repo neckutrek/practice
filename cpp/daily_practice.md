@@ -1,7 +1,7 @@
 # C++11
 - **Move semantics**
 
-move = transfer ownership of data
+move = transfer ownership of data  
 forward = 
 
 void f(int&& a); // rvalue reference
