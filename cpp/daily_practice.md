@@ -1,5 +1,5 @@
 # C++11
-- Move semantics
+- **Move semantics**
 
 move = transfer ownership of data
 forward = 
@@ -11,11 +11,11 @@ std::move()
 std::forward()
 
 
-- Unified initialization
-- auto and decltype
-- lambdas
-- multithreading
-- regex
-- smart pointers
-- hash tables
-- std::array
+- **Unified initialization**
+- **auto and decltype**
+- **lambdas**
+- **multithreading**
+- **regex**
+- **smart pointers**
+- **hash tables**
+- **std::array**
