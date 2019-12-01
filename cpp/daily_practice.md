@@ -4,13 +4,13 @@
 move = transfer ownership of data  
 forward = 
 
-void f(int&& a); // rvalue reference
-template<typename T> void f(T&& a); // forwarding/universal reference
-  a universal reference will bind to anything, it will accept anything and preserve its constness
-void f(auto&& a); // 
+    void f(int&& a); // rvalue reference
+    template<typename T> void f(T&& a); // forwarding/universal reference
+      a universal reference will bind to anything, it will accept anything and preserve its constness
+    void f(auto&& a); // 
 
-std::move()
-std::forward()
+    std::move()
+    std::forward()
 
 
 - **Unified initialization**
