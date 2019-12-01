@@ -3,7 +3,7 @@
 # C++11
 - **Move semantics**
 
-*move semantics* = swap resource pointers (handles) between x and the temporary, and then let the temporary's destructor destruct x's original resource  
+*move semantics* = swap resource pointers (handles) between x and the temporary, and then let the temporary's destructor destruct x's original resource. Problem: if the destructor has side effects and the old value of x drifts through furthers moves, it's hard to say when or if it's desctructor will be called. Therefore, any part of an object's destruction that has side effects should be performed explicitly in the rvalue reference overload of the copy assignment operator.
 
 > Rvalue references allow a function to branch at compile time (via overload resolution) on the condition "Am I being called on an lvalue or an rvalue?"
   
@@ -23,8 +23,7 @@
     It passes its argument right through by reference, doing nothing with it at all, and its result type is rvalue reference.
     std::move "turns its argument into an rvalue even if it isn't," and it achieves that by "hiding the name."
     
-   
-  
+  Use std::move to force branching on the rvalue-ref overload of the copyctor/assignment operator, even for lvalues.
 
 - **Perfect Forwarding**
 
