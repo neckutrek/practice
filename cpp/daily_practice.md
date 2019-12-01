@@ -4,9 +4,8 @@
 - **Move semantics**
 
 *move semantics* = swap resource pointers (handles) between x and the temporary, and then let the temporary's destructor destruct x's original resource  
-forward = 
 
-  > Rvalue references allow a function to branch at compile time (via overload resolution) on the condition "Am I being called on an lvalue or an rvalue?"
+> Rvalue references allow a function to branch at compile time (via overload resolution) on the condition "Am I being called on an lvalue or an rvalue?"
   
   > Things that are declared as rvalue reference can be lvalues or rvalues. The distinguishing criterion is: if it has a name, then it is an lvalue. Otherwise, it is an rvalue.
 
@@ -14,13 +13,24 @@ forward =
     template<typename T> void f(T&& a); // forwarding/universal reference
       a universal reference will bind to anything, it will accept anything and preserve its constness
     void f(auto&& a); // 
+    
+    A& & becomes A&
+    A& && becomes A&
+    A&& & becomes A&
+    A&& && becomes A&&
 
   > **std::move()**
     It passes its argument right through by reference, doing nothing with it at all, and its result type is rvalue reference.
     std::move "turns its argument into an rvalue even if it isn't," and it achieves that by "hiding the name."
     
-    std::forward<T>()
+   
   
+
+- **Perfect Forwarding**
+
+*perfect forwarding* = 
+
+  > **std::forward<T>()**
 
 
 - **Unified initialization**
