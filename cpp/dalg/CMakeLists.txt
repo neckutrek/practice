@@ -8,3 +8,4 @@ project(dalg)
 set( CMAKE_CXX_FLAGS "-Wpedantic -Wall -O3 -std=c++17" )
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/test)
